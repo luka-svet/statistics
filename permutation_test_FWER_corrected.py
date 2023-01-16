@@ -120,7 +120,6 @@ def tolerances_old(pop_un1_old, pop_tr1_old, pop_un2_old, pop_tr2_old):
 # pop_un2_obs = [[1000, 2000], [2000, 3000]]
 # pop_tr2_obs = [[500, 600], [700, 800]]
 
-start_time = time.time()
 # Or import using the csv file
 data = read_csv("C:/Users/DrPai/Desktop/data.csv", sep=";")
 
