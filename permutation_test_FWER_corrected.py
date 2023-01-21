@@ -216,8 +216,6 @@ for g in frequencies:
 for s in range(len(freq_temp)):
     # noinspection PyTypeChecker
     idx = sorted_freq.index(freq_temp[s])
-    print(freq_temp[s])
-    print(idx)
     print(
         f"The uncorrected: minP/maxT: Holm-Sidak corrected p values for #{s + 1} are: "
         f"{frequencies[s] / simulations:.5f} : "
