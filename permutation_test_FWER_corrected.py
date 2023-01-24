@@ -59,7 +59,7 @@ def draw_samples(pop_un1, pop_tr1, pop_un2, pop_tr2):
 
 
 def average_population_new(pop_un1_new, pop_tr1_new, pop_un2_new, pop_tr2_new):
-    """"Calculate new average population sizes."""
+    """Calculate new average population sizes."""
 
     # Initialize
     avg_pop_un1_new = 0
@@ -91,14 +91,14 @@ def average_population_new(pop_un1_new, pop_tr1_new, pop_un2_new, pop_tr2_new):
 
 def tolerances_new(avg_pop_un1_new_p, avg_pop_tr1_new_p, avg_pop_un2_new_p,
                    avg_pop_tr2_new_p):
-    """"Calculate new tolerances."""
+    """Calculate new tolerances."""
     tol1 = avg_pop_tr1_new_p / avg_pop_un1_new_p
     tol2 = avg_pop_tr2_new_p / avg_pop_un2_new_p
     return tol1, tol2
 
 
 def tolerances_old(pop_un1_old, pop_tr1_old, pop_un2_old, pop_tr2_old):
-    """"Calculate old (observed) tolerances."""
+    """Calculate old (observed) tolerances."""
     avg_pop_obs = average_population_new(pop_un1_old, pop_tr1_old, pop_un2_old,
                                          pop_tr2_old)
     tolerances_obs = tolerances_new(avg_pop_obs[0], avg_pop_obs[1],
@@ -123,14 +123,14 @@ def tolerances_old(pop_un1_old, pop_tr1_old, pop_un2_old, pop_tr2_old):
 # Or import using the csv file
 data = read_csv("C:/data.csv", sep=";")
 
-# converting column data to list,
+# Converting column data to list
 pop_tr1_obs = data['NUM1'].dropna().tolist()
 pop_un1_obs = data['DENOM1'].dropna().tolist()
 
-# import the number of pop_un2_obs and pop_tr2_obs as needed (follow the
+# Import the number of pop_un2_obs and pop_tr2_obs as needed (follow the
 # above example)
 pop_tr2_obs = [data['NUM2'].dropna().tolist(), data['NUM3'].dropna().tolist()]
-pop_un2_obs = [data['DENOM2'].dropna().tolist(), data['NUM3'].dropna().tolist()]
+pop_un2_obs = [data['DENOM2'].dropna().tolist(), data['DENOM3'].dropna().tolist()]
 
 # Other parameters
 simulations = 30_000

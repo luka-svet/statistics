@@ -53,6 +53,10 @@ def draw_bs_replicates(data1, data2, func, size):
 bs_replicates_array = draw_bs_replicates(population_d1, population_d2, np.mean,
                                          30_000)
 
+
+
+
+
 # Print empirical mean
 print(
     "Empirical mean: " + str(np.mean(population_d1) / np.mean(population_d2)))
