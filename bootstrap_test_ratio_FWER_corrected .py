@@ -28,7 +28,7 @@ population_un = [data['UN1'].dropna().tolist(), data['UN2'].dropna().tolist(),
                  data['UN3'].dropna().tolist()]
 
 
-def draw_bs_replicates(pop_tr_new1, pop_un_new1, pop_tr_new2, pop_un_new2,
+def draw_bs_replicates(pop_tr1, pop_un1, pop_tr2, pop_un2,
                        size):
     """Creates bootstrap samples, computes replicates and returns
     replicates array."""
@@ -38,10 +38,10 @@ def draw_bs_replicates(pop_tr_new1, pop_un_new1, pop_tr_new2, pop_un_new2,
     # Create bootstrap replicates as much as size
     for i in range(size):
         # Create bootstrap samples
-        bs_sample_tr1 = np.random.choice(pop_tr_new1, size=len(pop_tr_new1))
-        bs_sample_un1 = np.random.choice(pop_un_new1, size=len(pop_un_new1))
-        bs_sample_tr2 = np.random.choice(pop_tr_new2, size=len(pop_tr_new2))
-        bs_sample_un2 = np.random.choice(pop_un_new2, size=len(pop_un_new2))
+        bs_sample_tr1 = np.random.choice(pop_tr1, size=len(pop_tr1))
+        bs_sample_un1 = np.random.choice(pop_un1, size=len(pop_un1))
+        bs_sample_tr2 = np.random.choice(pop_tr2, size=len(pop_tr2))
+        bs_sample_un2 = np.random.choice(pop_un2, size=len(pop_un2))
         # Get bootstrap replicate and append to bs_replicates
         bs_replicates[i] = observed_x_statistic(bs_sample_tr1, bs_sample_un1,
                                                 bs_sample_tr2, bs_sample_un2)
@@ -68,13 +68,8 @@ num_samples = len(population_tr) - 1
 
 # Various lists
 observed_x = []
-population_tr1_new = []
-population_un1_new = []
-population_tr2_new = []
-population_un2_new = []
 bs_replicates_all = []
-frequencies = [
-                  1] * num_samples  # Better than starting with 0 (see https://stats.stackexchange.com/questions/92542/how-to-perform-a-bootstrap-test-to-compare-the-means-of-two-samples)
+frequencies = [1] * num_samples  # Better than starting with 0 (see https://stats.stackexchange.com/questions/92542/how-to-perform-a-bootstrap-test-to-compare-the-means-of-two-samples)
 adjusted_p = []
 freq_temp = []
 
@@ -84,24 +79,10 @@ for w in range(num_samples):
                                            population_tr[w + 1],
                                            population_un[w + 1]))
 
-    # Create new data sets for compared to sample (main sample)
-    population_tr1_new.append([x - np.mean(population_tr[0]) + np.mean(
-        population_tr[0] + population_tr[w + 1]) for x in population_tr[0]])
-    population_un1_new.append([x - np.mean(population_un[0]) + np.mean(
-        population_un[0] + population_un[w + 1]) for x in population_un[0]])
-
-    # Create new data sets for other samples (those compared to the main sample)
-    population_tr2_new.append([x - np.mean(population_tr[w + 1]) + np.mean(
-        population_tr[0] + population_tr[w + 1]) for x in
-                               population_tr[w + 1]])
-    population_un2_new.append([x - np.mean(population_un[w + 1]) + np.mean(
-        population_un[0] + population_un[w + 1]) for x in
-                               population_un[w + 1]])
-
     # Draw n bootstrap replicates for all the samples
     bs_replicates_all.append(
-        draw_bs_replicates(population_tr1_new[w], population_un1_new[w],
-                           population_tr2_new[w], population_un2_new[w],
+        draw_bs_replicates(population_tr[0], population_un[0],
+                           population_tr[w + 1], population_un[w + 1],
                            simulations))
     for y in range(simulations):
         if abs(bs_replicates_all[w][y]) >= abs(observed_x[w]):
