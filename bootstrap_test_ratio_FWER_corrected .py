@@ -69,7 +69,8 @@ num_samples = len(population_tr) - 1
 # Various lists
 observed_x = []
 bs_replicates_all = []
-frequencies = [1] * num_samples  # Better than starting with 0 (see https://stats.stackexchange.com/questions/92542/how-to-perform-a-bootstrap-test-to-compare-the-means-of-two-samples)
+frequencies = [
+                  1] * num_samples  # Better than starting with 0 (see https://stats.stackexchange.com/questions/92542/how-to-perform-a-bootstrap-test-to-compare-the-means-of-two-samples)
 adjusted_p = []
 freq_temp = []
 
@@ -85,7 +86,10 @@ for w in range(num_samples):
                            population_tr[w + 1], population_un[w + 1],
                            simulations))
     for y in range(simulations):
-        if abs(bs_replicates_all[w][y]) >= abs(observed_x[w]):
+        if (
+                abs(bs_replicates_all[w][y] - np.mean(
+                    bs_replicates_all[w]))) >= abs(
+            observed_x[w]):
             frequencies[w] += 1
 
 # Calculate the Holm-Sidak corrected two-sided p value
