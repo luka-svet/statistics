@@ -26,7 +26,7 @@ population_tr = [data['TR1'].dropna().tolist()]
 population_un = data['UN1'].dropna().tolist()
 
 
-def draw_bs_replicates(pop_tr, pop_un, size):
+def draw_bs_replicates(pop_tr_new, pop_un_new, size):
     """Creates bootstrap samples, computes replicates and returns
     replicates array."""
     # Create an empty array to store replicates
@@ -35,8 +35,8 @@ def draw_bs_replicates(pop_tr, pop_un, size):
     # Create bootstrap replicates as much as size
     for i in range(size):
         # Create bootstrap samples
-        bs_sample_tr = np.random.choice(pop_tr, size=len(pop_tr))
-        bs_sample_un = np.random.choice(pop_un, size=len(pop_un))
+        bs_sample_tr = np.random.choice(pop_tr_new, size=len(pop_tr_new))
+        bs_sample_un = np.random.choice(pop_un_new, size=len(pop_un_new))
         # Get bootstrap replicate and append to bs_replicates
         bs_replicates[i] = observed_t_statistic(bs_sample_tr, bs_sample_un)
 
@@ -47,9 +47,12 @@ def observed_t_statistic(tr_data, un_data):
     """Computes t statistic of the observed data"""
     mean_tr = np.mean(tr_data)
     mean_un = np.mean(un_data)
-    obs_x_statistic = (mean_tr - mean_un)
+    var_tr = np.var(tr_data)
+    var_un = np.var(un_data)
+    obs_t_statistic = (mean_tr - mean_un) / (
+        np.sqrt(var_tr / len(tr_data) + var_un / len(un_data)))
 
-    return obs_x_statistic
+    return obs_t_statistic
 
 
 # General variables
@@ -59,25 +62,34 @@ simulations = 30_000
 num_samples = len(population_tr)
 
 # Various lists
-observed_x = []
+observed_t = []
+population_tr_new = []
+population_un_new = []
 bs_replicates_all = []
-frequencies = [
-                  1] * num_samples  # Better than starting with 0 (see https://stats.stackexchange.com/questions/92542/how-to-perform-a-bootstrap-test-to-compare-the-means-of-two-samples)
+frequencies = [1] * num_samples  # Better than starting with 0 (see https://stats.stackexchange.com/questions/92542/how-to-perform-a-bootstrap-test-to-compare-the-means-of-two-samples)
 adjusted_p = []
 freq_temp = []
 
 for w in range(num_samples):
     # Append the observed statistic
-    observed_x.append(observed_t_statistic(population_tr[w], population_un))
+    observed_t.append(observed_t_statistic(population_tr[w], population_un))
+
+    # Create new data sets
+    population_tr_new.append([x - np.mean(population_tr[w]) + np.mean(
+        population_un + population_tr[w]) for x in population_tr[w]])
+    population_un_new.append(
+        [x - np.mean(population_un) + np.mean(population_un + population_tr[w])
+         for x in population_un])
 
     # Draw n bootstrap replicates for all the samples
     bs_replicates_all.append(
-        draw_bs_replicates(population_tr[w], population_un, simulations))
+        draw_bs_replicates(population_tr_new[w], population_un_new[w],
+                           simulations))
     for y in range(simulations):
         if (
                 abs(bs_replicates_all[w][y] - np.mean(
                     bs_replicates_all[w]))) >= abs(
-            observed_x[w]):
+            observed_t[w]):
             frequencies[w] += 1
 
 # Calculate the Holm-Sidak corrected two-sided p value
