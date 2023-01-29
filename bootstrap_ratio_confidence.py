@@ -82,7 +82,7 @@ for w in range(num_samples):
     # Plot the PDF for bootstrap replicates as histogram
     plt.hist(bs_replicates_array[w], bins=200,
              weights=np.ones(len(bs_replicates_array[w])) / len(
-                 bs_replicates_array))
+                 bs_replicates_array[w]))
 
     # Showing the related percentiles
     plt.axvline(x=np.percentile(bs_replicates_array[w], [2.5]), ymin=0, ymax=1,
