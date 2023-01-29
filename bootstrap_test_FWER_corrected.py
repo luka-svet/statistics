@@ -22,7 +22,7 @@ from pandas import *
 data = read_csv("C:/data.csv", sep=";")
 
 # converting column data to list
-population_tr = [data['TR1'].dropna().tolist()]
+population_tr = [data['TR1'].dropna().tolist(), data['TR2'].dropna().tolist(), data['TR3'].dropna().tolist(), data['TR4'].dropna().tolist(), data['TR5'].dropna().tolist(), data['TR6'].dropna().tolist()]
 population_un = data['UN1'].dropna().tolist()
 
 

@@ -15,21 +15,22 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 from pandas import *
-
-# Enter data (example below)
-# population_d1 = [100, 200, 300]
-
-# population_d2 = [1000, 2000, 3000]
 
 # Or import using the csv file
 data = read_csv("C:/data.csv", sep=";")
 
 # converting column data to list
-population_d1 = data['NUM'].dropna().tolist()
-population_d2 = data['DENOM'].dropna().tolist()
+population_d1 = [data['TR1'].dropna().tolist(), data['TR2'].dropna().tolist(),
+                 data['TR3'].dropna().tolist(), data['TR4'].dropna().tolist(),
+                 data['TR5'].dropna().tolist(), data['TR6'].dropna().tolist(),
+                 data['TR7'].dropna().tolist()]
+population_d2 = [data['UN1'].dropna().tolist(), data['UN2'].dropna().tolist(),
+                 data['UN3'].dropna().tolist(), data['UN4'].dropna().tolist(),
+                 data['UN5'].dropna().tolist(), data['UN6'].dropna().tolist(),
+                 data['UN7'].dropna().tolist()]
 
 
 def draw_bs_replicates(data1, data2, func, size):
@@ -49,41 +50,51 @@ def draw_bs_replicates(data1, data2, func, size):
     return bs_replicates
 
 
-# Draw 30000 bootstrap replicates
-bs_replicates_array = draw_bs_replicates(population_d1, population_d2, np.mean,
-                                         30_000)
+bs_replicates_array = []
+num_samples = len(population_d1)
 
+for w in range(num_samples):
+    # Draw 30000 bootstrap replicates for all the samples
+    bs_replicates_array.append(
+        draw_bs_replicates(population_d1[w], population_d2[w], np.mean,
+                           30_000))
 
+    # Print sample number
+    print("--------------------" + str(w + 1) + "--------------------")
 
+    # Print the empirical mean
+    print(
+        "Empirical mean: " + str(
+            np.mean(population_d1[w]) / np.mean(population_d2[w])))
 
+    # Print the mean of bootstrap replicates
+    print("Bootstrap replicates mean: " + str(np.mean(bs_replicates_array[w])))
 
-# Print empirical mean
-print(
-    "Empirical mean: " + str(np.mean(population_d1) / np.mean(population_d2)))
+    # Get the corresponding values of 2.5th and 97.5th percentiles
+    conf_interval = np.percentile(bs_replicates_array[w], [2.5, 50, 97.5])
 
-# Print the mean of bootstrap replicates
-print("Bootstrap replicates mean: " + str(np.mean(bs_replicates_array)))
+    # Print the interval
+    print("The 2.5th, 50th and 97.5th percentile: ", conf_interval)
 
-# Get the corresponding values of 2.5th and 97.5th percentiles
-conf_interval = np.percentile(bs_replicates_array, [2.5, 50, 97.5])
+    # End block
+    print("----------------------------------------\n")
 
-# Print the interval
-print("The 2.5th, 50th and 97.5th percentile: ", conf_interval)
+    # Plot the PDF for bootstrap replicates as histogram
+    plt.hist(bs_replicates_array[w], bins=200,
+             weights=np.ones(len(bs_replicates_array[w])) / len(
+                 bs_replicates_array))
 
-# Plot the PDF for bootstrap replicates as histogram
-plt.hist(bs_replicates_array, bins=200,
-         weights=np.ones(len(bs_replicates_array)) / len(bs_replicates_array))
+    # Showing the related percentiles
+    plt.axvline(x=np.percentile(bs_replicates_array[w], [2.5]), ymin=0, ymax=1,
+                label='2.5th percentile', c='y')
+    plt.axvline(x=np.percentile(bs_replicates_array[w], [50]), ymin=0, ymax=1,
+                label='50th percentile', c='g')
+    plt.axvline(x=np.percentile(bs_replicates_array[w], [97.5]), ymin=0,
+                ymax=1,
+                label='97.5th percentile', c='r')
 
-# Showing the related percentiles
-plt.axvline(x=np.percentile(bs_replicates_array, [2.5]), ymin=0, ymax=1,
-            label='2.5th percentile', c='y')
-plt.axvline(x=np.percentile(bs_replicates_array, [50]), ymin=0, ymax=1,
-            label='50th percentile', c='g')
-plt.axvline(x=np.percentile(bs_replicates_array, [97.5]), ymin=0, ymax=1,
-            label='97.5th percentile', c='r')
-
-plt.xlabel("Ratios of means")
-plt.ylabel("PDF")
-plt.title("Probability Density Function")
-plt.legend()
-plt.show()
+    plt.xlabel("Ratios of means")
+    plt.ylabel("PDF")
+    plt.title("Probability Density Function")
+    plt.legend()
+    plt.show()

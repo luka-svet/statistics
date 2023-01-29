@@ -23,9 +23,13 @@ data = read_csv("C:/data.csv", sep=";")
 
 # converting column data to list
 population_tr = [data['TR1'].dropna().tolist(), data['TR2'].dropna().tolist(),
-                 data['TR3'].dropna().tolist()]
+                 data['TR3'].dropna().tolist(), data['TR4'].dropna().tolist(),
+                 data['TR5'].dropna().tolist(), data['TR6'].dropna().tolist(),
+                 data['TR7'].dropna().tolist()]
 population_un = [data['UN1'].dropna().tolist(), data['UN2'].dropna().tolist(),
-                 data['UN3'].dropna().tolist()]
+                 data['UN3'].dropna().tolist(), data['UN4'].dropna().tolist(),
+                 data['UN5'].dropna().tolist(), data['UN6'].dropna().tolist(),
+                 data['UN7'].dropna().tolist()]
 
 
 def draw_bs_replicates(pop_tr1, pop_un1, pop_tr2, pop_un2,
