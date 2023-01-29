@@ -22,7 +22,9 @@ from pandas import *
 data = read_csv("C:/data.csv", sep=";")
 
 # converting column data to list
-population_tr = [data['TR1'].dropna().tolist(), data['TR2'].dropna().tolist(), data['TR3'].dropna().tolist(), data['TR4'].dropna().tolist(), data['TR5'].dropna().tolist(), data['TR6'].dropna().tolist()]
+population_tr = [data['TR1'].dropna().tolist(), data['TR2'].dropna().tolist(),
+                 data['TR3'].dropna().tolist(), data['TR4'].dropna().tolist(),
+                 data['TR5'].dropna().tolist(), data['TR6'].dropna().tolist()]
 population_un = data['UN1'].dropna().tolist()
 
 
@@ -66,7 +68,8 @@ observed_t = []
 population_tr_new = []
 population_un_new = []
 bs_replicates_all = []
-frequencies = [1] * num_samples  # Better than starting with 0 (see https://stats.stackexchange.com/questions/92542/how-to-perform-a-bootstrap-test-to-compare-the-means-of-two-samples)
+frequencies = [
+                  1] * num_samples  # Better than starting with 0 (see https://stats.stackexchange.com/questions/92542/how-to-perform-a-bootstrap-test-to-compare-the-means-of-two-samples)
 adjusted_p = []
 freq_temp = []
 
