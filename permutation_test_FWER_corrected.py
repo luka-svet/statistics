@@ -124,13 +124,17 @@ def tolerances_old(pop_un1_old, pop_tr1_old, pop_un2_old, pop_tr2_old):
 data = read_csv("C:/data.csv", sep=";")
 
 # Converting column data to list
-pop_tr1_obs = data['NUM1'].dropna().tolist()
-pop_un1_obs = data['DENOM1'].dropna().tolist()
+pop_tr1_obs = data['TR1'].dropna().tolist()
+pop_un1_obs = data['UN1'].dropna().tolist()
 
 # Import the number of pop_un2_obs and pop_tr2_obs as needed (follow the
 # above example)
-pop_tr2_obs = [data['NUM2'].dropna().tolist(), data['NUM3'].dropna().tolist()]
-pop_un2_obs = [data['DENOM2'].dropna().tolist(), data['DENOM3'].dropna().tolist()]
+pop_tr2_obs = [data['TR2'].dropna().tolist(), data['TR3'].dropna().tolist(),
+               data['TR4'].dropna().tolist(), data['TR5'].dropna().tolist(),
+               data['TR6'].dropna().tolist(), data['TR7'].dropna().tolist()]
+pop_un2_obs = [data['UN2'].dropna().tolist(), data['UN3'].dropna().tolist(),
+               data['UN4'].dropna().tolist(), data['UN5'].dropna().tolist(),
+               data['UN6'].dropna().tolist(), data['UN7'].dropna().tolist()]
 
 # Other parameters
 simulations = 30_000

@@ -90,12 +90,11 @@ for w in range(num_samples):
                            population_tr[w + 1], population_un[w + 1],
                            simulations))
     for y in range(simulations):
-        if observed_x[w] >= 0:
-            if bs_replicates_all[w][y] <= 0:
-                frequencies[w] += 1
-        elif observed_x[w] < 0:
-            if bs_replicates_all[w][y] >= 0:
-                frequencies[w] += 1
+        if (
+                abs(bs_replicates_all[w][y] - np.mean(
+                    bs_replicates_all[w]))) >= abs(
+            observed_x[w]):
+            frequencies[w] += 1
 
 # Calculate the Holm-Sidak corrected two-sided p value
 sorted_freq = sorted(frequencies)

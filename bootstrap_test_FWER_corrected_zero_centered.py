@@ -1,4 +1,4 @@
-# Bootstrap test for ratios with correction for multiple hypotheses tests
+# Bootstrap test for means with correction for multiple hypotheses tests
 #
 # Copyright 2022-2023 Luka Svet <luka.svet@kuleuven.be>
 #
@@ -22,18 +22,11 @@ from pandas import *
 data = read_csv("C:/data.csv", sep=";")
 
 # converting column data to list
-population_tr = [data['TR1'].dropna().tolist(), data['TR2'].dropna().tolist(),
-                 data['TR3'].dropna().tolist(), data['TR4'].dropna().tolist(),
-                 data['TR5'].dropna().tolist(), data['TR6'].dropna().tolist(),
-                 data['TR7'].dropna().tolist()]
-population_un = [data['UN1'].dropna().tolist(), data['UN2'].dropna().tolist(),
-                 data['UN3'].dropna().tolist(), data['UN4'].dropna().tolist(),
-                 data['UN5'].dropna().tolist(), data['UN6'].dropna().tolist(),
-                 data['UN7'].dropna().tolist()]
+population_tr = [data['TR1'].dropna().tolist(), data['TR2'].dropna().tolist(), data['TR3'].dropna().tolist(), data['TR4'].dropna().tolist(), data['TR5'].dropna().tolist(), data['TR6'].dropna().tolist()]
+population_un = data['UN1'].dropna().tolist()
 
 
-def draw_bs_replicates(pop_tr1, pop_un1, pop_tr2, pop_un2,
-                       size):
+def draw_bs_replicates(pop_tr, pop_un, size):
     """Creates bootstrap samples, computes replicates and returns
     replicates array."""
     # Create an empty array to store replicates
@@ -42,24 +35,19 @@ def draw_bs_replicates(pop_tr1, pop_un1, pop_tr2, pop_un2,
     # Create bootstrap replicates as much as size
     for i in range(size):
         # Create bootstrap samples
-        bs_sample_tr1 = np.random.choice(pop_tr1, size=len(pop_tr1))
-        bs_sample_un1 = np.random.choice(pop_un1, size=len(pop_un1))
-        bs_sample_tr2 = np.random.choice(pop_tr2, size=len(pop_tr2))
-        bs_sample_un2 = np.random.choice(pop_un2, size=len(pop_un2))
+        bs_sample_tr = np.random.choice(pop_tr, size=len(pop_tr))
+        bs_sample_un = np.random.choice(pop_un, size=len(pop_un))
         # Get bootstrap replicate and append to bs_replicates
-        bs_replicates[i] = observed_x_statistic(bs_sample_tr1, bs_sample_un1,
-                                                bs_sample_tr2, bs_sample_un2)
+        bs_replicates[i] = observed_t_statistic(bs_sample_tr, bs_sample_un)
 
     return bs_replicates
 
 
-def observed_x_statistic(tr_data1, un_data1, tr_data2, un_data2):
-    """Computes x statistic of the observed data"""
-    mean_tr1 = np.mean(tr_data1)
-    mean_un1 = np.mean(un_data1)
-    mean_tr2 = np.mean(tr_data2)
-    mean_un2 = np.mean(un_data2)
-    obs_x_statistic = (mean_tr1 / mean_un1) - (mean_tr2 / mean_un2)
+def observed_t_statistic(tr_data, un_data):
+    """Computes t statistic of the observed data"""
+    mean_tr = np.mean(tr_data)
+    mean_un = np.mean(un_data)
+    obs_x_statistic = (mean_tr - mean_un)
 
     return obs_x_statistic
 
@@ -68,7 +56,7 @@ def observed_x_statistic(tr_data1, un_data1, tr_data2, un_data2):
 simulations = 30_000
 
 # Number of comparisons vs WT to be done
-num_samples = len(population_tr) - 1
+num_samples = len(population_tr)
 
 # Various lists
 observed_x = []
@@ -80,22 +68,17 @@ freq_temp = []
 
 for w in range(num_samples):
     # Append the observed statistic
-    observed_x.append(observed_x_statistic(population_tr[0], population_un[0],
-                                           population_tr[w + 1],
-                                           population_un[w + 1]))
+    observed_x.append(observed_t_statistic(population_tr[w], population_un))
 
     # Draw n bootstrap replicates for all the samples
     bs_replicates_all.append(
-        draw_bs_replicates(population_tr[0], population_un[0],
-                           population_tr[w + 1], population_un[w + 1],
-                           simulations))
+        draw_bs_replicates(population_tr[w], population_un, simulations))
     for y in range(simulations):
-        if observed_x[w] >= 0:
-            if bs_replicates_all[w][y] <= 0:
-                frequencies[w] += 1
-        elif observed_x[w] < 0:
-            if bs_replicates_all[w][y] >= 0:
-                frequencies[w] += 1
+        if (
+                abs(bs_replicates_all[w][y] - np.mean(
+                    bs_replicates_all[w]))) >= abs(
+            observed_x[w]):
+            frequencies[w] += 1
 
 # Calculate the Holm-Sidak corrected two-sided p value
 sorted_freq = sorted(frequencies)

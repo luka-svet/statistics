@@ -38,12 +38,12 @@ def draw_bs_replicates(pop_tr, pop_un, size):
         bs_sample_tr = np.random.choice(pop_tr, size=len(pop_tr))
         bs_sample_un = np.random.choice(pop_un, size=len(pop_un))
         # Get bootstrap replicate and append to bs_replicates
-        bs_replicates[i] = observed_t_statistic(bs_sample_tr, bs_sample_un)
+        bs_replicates[i] = observed_x_statistic(bs_sample_tr, bs_sample_un)
 
     return bs_replicates
 
 
-def observed_t_statistic(tr_data, un_data):
+def observed_x_statistic(tr_data, un_data):
     """Computes t statistic of the observed data"""
     mean_tr = np.mean(tr_data)
     mean_un = np.mean(un_data)
@@ -68,17 +68,18 @@ freq_temp = []
 
 for w in range(num_samples):
     # Append the observed statistic
-    observed_x.append(observed_t_statistic(population_tr[w], population_un))
+    observed_x.append(observed_x_statistic(population_tr[w], population_un))
 
     # Draw n bootstrap replicates for all the samples
     bs_replicates_all.append(
         draw_bs_replicates(population_tr[w], population_un, simulations))
     for y in range(simulations):
-        if (
-                abs(bs_replicates_all[w][y] - np.mean(
-                    bs_replicates_all[w]))) >= abs(
-            observed_x[w]):
-            frequencies[w] += 1
+        if observed_x[w] >= 0:
+            if bs_replicates_all[w][y] <= 0:
+                frequencies[w] += 1
+        elif observed_x[w] < 0:
+            if bs_replicates_all[w][y] >= 0:
+                frequencies[w] += 1
 
 # Calculate the Holm-Sidak corrected two-sided p value
 sorted_freq = sorted(frequencies)
